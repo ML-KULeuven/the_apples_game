@@ -172,8 +172,14 @@ Next use the commands `gulp` to start the development server and `gulp dist` to 
 Contact information
 -------------------
 
+Main developer:
+
+- Pieter Robberechts,  https://people.cs.kuleuven.be/pieter.robberechts
+
+Team:
+
 - Wannes Meert, https://people.cs.kuleuven.be/wannes.meert
 - Karl Tuyls, http://www.karltuyls.net/
 - Sebastijan Dumančić, https://people.cs.kuleuven.be/sebastijan.dumancic
 - Robin Manhaeve,  https://people.cs.kuleuven.be/robin.manhaeve
-- Pieter Robberechts,  https://people.cs.kuleuven.be/pieter.robberechts
+
