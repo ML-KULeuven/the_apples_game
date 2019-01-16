@@ -3,7 +3,7 @@ Apples game application
 Two agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at the other agent, “tagging them”, to temporarily remove them from the game, but this action does not trigger a reward.
 <https://deepmind.com/blog/understanding-agent-cooperation/>
 
-Live demo: https://people.cs.kuleuven.be/wannes.meert/https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist//play
+Live demo: https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist/
 
 ![Screenshot of the Apples Game](https://people.cs.kuleuven.be/wannes.meert/https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist//screenshot.png?v=1)
 
