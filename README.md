@@ -5,7 +5,7 @@ Two agents roam a shared world and collect apples to receive positive rewards. T
 
 Live demo: https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist/
 
-![Screenshot of the Apples Game](https://people.cs.kuleuven.be/wannes.meert/https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist//screenshot.png?v=1)
+![Screenshot of the Apples Game](https://people.cs.kuleuven.be/wannes.meert/the_apples_game/screenshot.png?v=1)
 
 This setup is part of the course "Machine Learning: Project" (KU Leuven,
 Faculty of engineering, Department of Computer Science,
