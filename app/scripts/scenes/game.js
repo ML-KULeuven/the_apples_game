@@ -153,13 +153,13 @@ export default class Game extends Phaser.Scene {
    */
   update(time, delta) {
     this.laser.update(time, delta);
-    if (!this.agents[this.curPlayer].address 
-      && this.agents[1].worm.updated
-      && this.agents[2].worm.updated) {
+    if (!this.agents[this.curPlayer].address &&
+      this.agents[1].worm.updated &&
+      this.agents[2].worm.updated) {
       this.handleUserInput();
     }
   }
-   
+
   //  ------------------------------------------------------------------------
 
   /**
@@ -274,7 +274,7 @@ export default class Game extends Phaser.Scene {
 
   startConnection(agent) {
     return new Promise(function (resolve, reject) {
-      var address = document.getElementById('agent' + agent.id).value;
+      var address = window.agents[agent.id - 1] || document.getElementById('agent' + agent.id).value;
       console.log('Address agent' + agent.id + ': ' + address);
       if (address === '') {
         resolve(agent);

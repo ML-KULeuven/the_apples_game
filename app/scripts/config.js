@@ -48,7 +48,7 @@ export const resolution = 1;
  *    - `AUTO`: Phaser will choose, based on device capabilities, the best
  *      rendering method to be used.
  */
-export const type = Phaser.AUTO;
+export const type = window.phaserType || Phaser.AUTO;
 
 /**
  *  Whether to disable antialiasing or not. Great for pixel art.

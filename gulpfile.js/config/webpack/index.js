@@ -20,10 +20,8 @@ export default (env = 'development') => ({
   //  The base path where to resolve entry points.
   context: src,
 
-  //  Entry points of the application. Vendor libraries (e.g.: Phaser) are
-  //  declared first to become available globally.
+  //  Entry points of the application.
   entry: {
-    vendor: ['phaser'],
     app: [dirs.scripts]
   },
 
