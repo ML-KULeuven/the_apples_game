@@ -43,11 +43,6 @@ export default class Game extends Phaser.Scene {
     this.timelimit = 0.5;
     this.curPlayer = 1;
     this.turns = 0;
-    this.agents = [
-      {},
-      {id: 1, address: undefined, active: false, socket: undefined, worm: undefined, points: 0},
-      {id: 2, address: undefined, active: false, socket: undefined, worm: undefined, points: 0}
-    ];
 
     this.msgQueue = [];
   }
@@ -72,11 +67,13 @@ export default class Game extends Phaser.Scene {
     let center = [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)];
     this.apples = grid.addApples(center[0], center[1]);
     this.laser = grid.addLaser();
-    this.agents[1].worm = grid.addWorm(4, Math.floor(HEIGHT / 2), 1);
-    this.agents[2].worm = grid.addWorm(WIDTH - 7, Math.floor(HEIGHT / 2) + 1, 2);
-    this.agents[2].worm.turnLeft();
-    this.agents[2].worm.turnLeft();
-    this.agents[2].worm.move();
+    window.agents.map(agent => {
+      let x = Math.floor(Math.random() * WIDTH);
+      let y = Math.floor(Math.random() * HEIGHT);
+      const directions = ['UP', 'RIGHT', 'LEFT', 'DOWN'];
+      let dir = directions[Math.floor(Math.random()*directions.length)];
+      agent.worm = grid.addWorm(x, y, dir, agent.id);
+    })
 
     //  Create our keyboard controls.
     this.cursors = this.input.keyboard.addKeys({
@@ -86,7 +83,7 @@ export default class Game extends Phaser.Scene {
       spaceBar: Phaser.Input.Keyboard.KeyCodes.SPACE
     });
 
-    var agentConnections = this.agents.slice(1).map(agent => this.startConnection(agent));
+    var agentConnections = window.agents.map(agent => this.startConnection(agent));
     var self = this;
     Promise.all(agentConnections)
       .then(function (agents) {
@@ -153,9 +150,8 @@ export default class Game extends Phaser.Scene {
    */
   update(time, delta) {
     this.laser.update(time, delta);
-    if (!this.agents[this.curPlayer].address &&
-      this.agents[1].worm.updated &&
-      this.agents[2].worm.updated) {
+    var allUpdated = window.agents.every(agent => agent.updated !== false);
+    if (!window.agents.find(agent => agent.id === this.curPlayer).address && allUpdated) {
       this.handleUserInput();
     }
   }
@@ -191,8 +187,8 @@ export default class Game extends Phaser.Scene {
    *  @param {String} action - The executed action.
    */
   updateLogic(player, action) {
-    const worm = this.agents[player].worm;
-    const otherWorm = this.agents[3 - this.curPlayer].worm;
+    const worm = window.agents.find(agent => agent.id === player).worm;
+    const otherWorms = window.agents.filter(agent => agent.id !== player).map(agent => agent.worm);
 
     if (action === 'move') {
       worm.move();
@@ -202,9 +198,15 @@ export default class Game extends Phaser.Scene {
       worm.turnRight();
     } else if (action === 'fire') {
       worm.fire();
-      var hit = this.laser.fire(worm.headPosition, worm.direction, otherWorm.headPosition);
+      var hit = otherWorms
+        .map(other => ({
+          worm: other,
+          distance: Phaser.Math.Distance.Between(worm.headPosition.x, worm.headPosition.y, other.headPosition.x, other.headPosition.y)
+        }))
+        .sort((a,b) => a.distance - b.distance)
+        .find(other => this.laser.fire(worm.headPosition, worm.direction, other.worm.headPosition));
       if (hit) {
-        let lives = otherWorm.tag();
+        let lives = hit.worm.tag();
         this.events.emit('worm-hit', 3 - this.curPlayer, lives);
       }
     }
@@ -221,31 +223,26 @@ export default class Game extends Phaser.Scene {
     if (worm.update()) {
       this.events.emit('worm-hit', player, worm.lives);
     }
-    if (otherWorm.update()) {
-      this.events.emit('worm-hit', 3 - player, otherWorm.lives);
-    }
+    otherWorms.forEach(otherWorm => {
+      if (otherWorm.update()) {
+        this.events.emit('worm-hit', 3 - player, otherWorm.lives);
+      }
+    })
     this.apples.update();
-    if (otherWorm.lives > 0) {
-      this.curPlayer = 3 - this.curPlayer;
-    }
+    // if (otherWorm.lives > 0) {
+    this.curPlayer = (this.curPlayer % window.agents.length) + 1;
+    // }
     this.events.emit('next-player', this.curPlayer);
 
     let reply = {
       type: 'action',
       player: player,
       nextplayer: this.curPlayer,
-      players: [
-        {
-          location: this.agents[1].worm.getGridLocation(),
-          orientation: this.agents[1].worm.getGridOrientation(),
-          score: this.agents[1].points
-        },
-        {
-          location: this.agents[2].worm.getGridLocation(),
-          orientation: this.agents[2].worm.getGridOrientation(),
-          score: this.agents[2].points
-        }
-      ],
+      players: agents.map(agent => ({
+          location: agent.worm.getGridLocation(),
+          orientation: agent.worm.getGridOrientation(),
+          score: agent.points
+      })),
       apples: this.apples.getGridLocation(),
       game: this.gameId
     };
@@ -268,20 +265,18 @@ export default class Game extends Phaser.Scene {
    *  @private
    */
   updatePoints(agent) {
-    this.agents[agent].points += 1;
-    this.events.emit('apple-eaten', agent, this.agents[agent].points);
+    window.agents[agent].points += 1;
+    this.events.emit('apple-eaten', agent, window.agents[agent].points);
   }
 
   startConnection(agent) {
     return new Promise(function (resolve, reject) {
-      var address = window.agents[agent.id - 1] || document.getElementById('agent' + agent.id).value;
-      console.log('Address agent' + agent.id + ': ' + address);
-      if (address === '') {
+      console.log('Address agent' + agent.id + ': ' + agent.address);
+      if (agent.address === '') {
         resolve(agent);
       } else {
-        console.log('Starting websocket for agent ' + agent.id + ' on address ' + address);
-        agent.address = address;
-        agent.socket = new WebSocket(address);
+        console.log('Starting websocket for agent ' + agent.id + ' on address ' + agent.address);
+        agent.socket = new WebSocket(agent.address);
         agent.socket.onopen = function () {
           console.log('Agent ' + agent.id + ' connected');
           agent.active = true;
@@ -300,24 +295,17 @@ export default class Game extends Phaser.Scene {
   }
 
   trySendingToAgents() {
-    var allConnected = true;
-    for (let i = 1; i < 3; i++) {
-      if (this.agents[i].address !== undefined && this.agents[i].active === false) {
-        allConnected = false;
-        break;
-      }
-    }
-    if (allConnected && this.agents[1].worm.updated && this.agents[2].worm.updated) {
+    var allConnected = window.agents.every(agent => agent.address === undefined || agent.active !== false);
+    var allUpdated = window.agents.every(agent => agent.updated !== false);
+    if (allConnected && allUpdated) {
       if (this.msgQueue.length === 0) {
         return;
       }
       var msg = this.msgQueue.shift();
       console.log('Send msg to agents', msg);
-      for (let i = 1; i < 3; i++) {
-        if (this.agents[i].active === true) {
-          this.agents[i].socket.send(msg);
-        }
-      }
+      window.agents
+        .filter(agent => agent.active)
+        .forEach(agent => agent.socket.send(msg));
     } else {
       // Wait until all are connected
       setTimeout(this.trySendingToAgents.bind(this), 100);

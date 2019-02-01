@@ -1,5 +1,5 @@
 import {WIDTH, HEIGHT, LENGTH} from '@/constants/grid';
-import {N, LIVES} from '@/constants/worm';
+import {N, LIVES, COLORS} from '@/constants/worm';
 
 export default class Worm {
   /**
@@ -10,18 +10,41 @@ export default class Worm {
    *  @param {number} y - The vertical coordinate relative to the scene viewport.
    *  @param {number} id - The player id.
    */
-  constructor(scene, x, y, id) {
+  constructor(scene, x, y, dir, id) {
     this.scene = scene;
+    this.id = id;
 
     // Create sprites
     this.body = scene.add.group({
-      defaultKey: 'body' + id,
-      createCallback: o => o.setOrigin(0.5)
+      defaultKey: 'body',
+      createCallback: o => {
+        o.setOrigin(0.5);
+        o.setTint(COLORS[id % COLORS.length]);
+      }
     });
-    this.head = this.body.create((x * LENGTH) + (LENGTH / 2), (y * LENGTH) + (LENGTH / 2), 'head' + id);
+    this.body.create((x * LENGTH) + (LENGTH / 2), (y * LENGTH) + (LENGTH / 2), 'body');
+    this.head = this.scene.add.sprite((x * LENGTH) + (LENGTH / 2), (y * LENGTH) + (LENGTH / 2), 'eyes');
 
     // Position on the grid
-    this.direction = new Phaser.Geom.Point(LENGTH, 0);
+    switch (dir) {
+    case 'DOWN':
+      this.direction = new Phaser.Geom.Point(0, LENGTH);
+      this.head.angle += 90;
+      break;
+    case 'RIGHT':
+      this.direction = new Phaser.Geom.Point(LENGTH, 0);
+      break;
+    case 'LEFT':
+      this.direction = new Phaser.Geom.Point(-LENGTH, 0);
+      this.head.angle -= 180;
+      break;
+    case 'UP':
+      this.direction = new Phaser.Geom.Point(0, -LENGTH);
+      this.head.angle -= 90;
+      break;
+    default:
+      this.direction = new Phaser.Geom.Point(LENGTH, 0);
+    }
     this.headPosition = new Phaser.Geom.Point(0, 0);
     this.tailPosition = new Phaser.Geom.Point(0, 0);
     this.move();
@@ -101,6 +124,7 @@ export default class Worm {
       Phaser.Math.Wrap(this.head.x + this.direction.x, 0, WIDTH * LENGTH),
       Phaser.Math.Wrap(this.head.y + this.direction.y, 0, HEIGHT * LENGTH)
     );
+    this.head.setPosition(this.headPosition.x, this.headPosition.y);
 
     //  Update the body segments and place the last coordinate into
     //  `this.tailPosition`.

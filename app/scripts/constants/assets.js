@@ -10,16 +10,10 @@ export default [{
   key: 'tileset',
   type: 'image'
 }, {
-  key: 'head1',
+  key: 'eyes',
   type: 'image'
 }, {
-  key: 'body1',
-  type: 'image'
-}, {
-  key: 'head2',
-  type: 'image'
-}, {
-  key: 'body2',
+  key: 'body',
   type: 'image'
 }, {
   key: 'food',

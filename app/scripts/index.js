@@ -11,7 +11,8 @@ import * as config from '@/config';
 
 //  Boot the game.
 export function boot() {
-  return new Phaser.Game(config);
+  window.game = new Phaser.Game(config);
+  return window.game;
 }
 
 boot();

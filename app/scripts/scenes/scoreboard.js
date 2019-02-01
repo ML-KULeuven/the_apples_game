@@ -1,5 +1,6 @@
 import {WIDTH, LENGTH} from '@/constants/grid';
 import fontConfig from '@/constants/bitmap-fonts';
+import {COLORS} from '@/constants/worm';
 
 export default class Scoreboard extends Phaser.Scene {
   /**
@@ -48,29 +49,15 @@ export default class Scoreboard extends Phaser.Scene {
    *  @param {object} [data={}] - Initialization parameters.
    */
   create(/* data */) {
-    this.scoreLabelP1 = this.add.bitmapText(0, 0, fontConfig.image, 'P1');
-    this.scoreP1 =
+    this.scoreLabel = this.add.bitmapText(0, 0, fontConfig.image, 'P1');
+    this.score =
       this.add.bitmapText(60, 0, fontConfig.image, '0')
         .setTint(0x003300);
-    this.livesP1 = this.add.group({
+    this.lives = this.add.group({
       key: 'heart',
       maxSize: 2,
       repeat: 1,
       setXY: {x: LENGTH / 2, y: 30, stepX: LENGTH}
-    });
-
-    this.scoreLabelP2 =
-      this.add.bitmapText(WIDTH * LENGTH, 0, fontConfig.image, 'P2')
-        .setOrigin(1, 0);
-    this.scoreP2 =
-      this.add.bitmapText((WIDTH * LENGTH) - 60, 0, fontConfig.image, '0')
-        .setOrigin(1, 0)
-        .setTint(0x003300);
-    this.livesP2 = this.add.group({
-      key: 'heart',
-      maxSize: 2,
-      repeat: 1,
-      setXY: {x: ((WIDTH * LENGTH) - (LENGTH / 2)), y: 30, stepX: -LENGTH}
     });
 
     this.gameOverLabel =
@@ -91,13 +78,8 @@ export default class Scoreboard extends Phaser.Scene {
    *  @private
    */
   setActivePlayer(player) {
-    this.scoreLabelP1.tint = 0x003300;
-    this.scoreLabelP2.tint = 0x003300;
-    if (player === 1) {
-      this.scoreLabelP1.tint = 0xE5C787;
-    } else if (player === 2) {
-      this.scoreLabelP2.tint = 0x7F6F60;
-    }
+    this.scoreLabel.setText('P' + String(player));
+    this.scoreLabel.tint = COLORS[player];
   }
 
   /**
@@ -108,11 +90,7 @@ export default class Scoreboard extends Phaser.Scene {
    *  @private
    */
   setScore(player, points) {
-    if (player === 1) {
-      this.scoreP1.setText(String(points));
-    } else if (player === 2) {
-      this.scoreP2.setText(String(points));
-    }
+    this.score.setText(String(points));
   }
 
   /**
@@ -123,12 +101,7 @@ export default class Scoreboard extends Phaser.Scene {
    *  @private
    */
   setLives(player, lives) {
-    let group;
-    if (player === 1) {
-      group = this.livesP1;
-    } else if (player === 2) {
-      group = this.livesP2;
-    }
+    let group = this.lives;
     for (var i = 0, len = group.children.size; i < len; i++) {
       if (i < lives) {
         group.children.entries[i].visible = true;

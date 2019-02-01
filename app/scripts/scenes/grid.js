@@ -52,8 +52,8 @@ export default class Maze extends Phaser.Scene {
    *  @param {number} [id=1] - The player id.
    *  @return {Worm} The worm sprite.
    */
-  addWorm(x = 0, y = x, id = 1) {
-    return new Worm(this, x, y, id);
+  addWorm(x = 0, y = x, dir = 'UP', id = 1) {
+    return new Worm(this, x, y, dir, id);
   }
 
   /**
