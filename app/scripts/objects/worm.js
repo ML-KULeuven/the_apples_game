@@ -1,5 +1,5 @@
 import {WIDTH, HEIGHT, LENGTH} from '@/constants/grid';
-import {N, LIVES, COLORS} from '@/constants/worm';
+import {COLORS} from '@/constants/worm';
 
 export default class Worm {
   /**
@@ -53,9 +53,6 @@ export default class Worm {
     this.grow();
 
     // Instance variables
-    this.lives = LIVES;
-    this.n = 0;
-    this.N = parseInt(document.getElementById('n_tagged').value, 10) || N;
     this.updated = true;
   }
 
@@ -170,16 +167,12 @@ export default class Worm {
 
       // function to be executed once the tween has been completed
       onComplete: function () {
-        if (this.lives === 0) {
-          this.die();
-        }
         this.alpha = 1;
         this.updated = true;
       }
     });
 
-    this.lives -= 1;
-    return this.lives;
+    return true;
   }
 
   fire() {
@@ -209,32 +202,12 @@ export default class Worm {
   }
 
   /**
-   *  Kill this worm.
-   *
-   *  @private
-   *  @returns {boolean} Whether the worm was killed or not.
-   */
-  die() {
-    this.body.toggleVisible();
-    this.n = this.N;
-    return true;
-  }
-
-  /**
    *  Updates the worm in the grid.
    *
    *  @public
    *  @returns {boolean} Whether the worm updated or not.
    */
   update() {
-    if (this.n > 0) {
-      this.n -= 1;
-      if (this.n === 0) {
-        this.body.toggleVisible();
-        this.lives = LIVES;
-        return true;
-      }
-    }
     return false;
   }
 }

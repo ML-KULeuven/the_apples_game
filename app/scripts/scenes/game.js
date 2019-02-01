@@ -21,7 +21,8 @@ export default class Game extends Phaser.Scene {
    *  This scene emits two events:
    *    - `next-player`: When it is the next player's turn.
    *    - `apple-eaten`: When a food gets eaten by the worm.
-   *    - `worm-died`: When one of the worms died.
+   *    - `worm-fired`: When one of the worms fired.
+   *    - `worm-hit`: When one of the worms was hit.
    *    - `game-over`: When the game has ended.
    *
    *  Those events are used to update the score board.
@@ -97,16 +98,10 @@ export default class Game extends Phaser.Scene {
               timelimit: self.timelimit,
               game: self.gameId,
               grid: [HEIGHT, WIDTH],
-              players: [
-                {
-                  location: self.agents[1].worm.getGridLocation(),
-                  orientation: self.agents[1].worm.getGridOrientation()
-                },
-                {
-                  location: self.agents[2].worm.getGridLocation(),
-                  orientation: self.agents[2].worm.getGridOrientation()
-                }
-              ],
+              players: window.agents.map(agent => ({
+                location: agent.worm.getGridLocation(),
+                orientation: agent.worm.getGridOrientation()
+              })),
               apples: self.apples.getGridLocation()
             };
             agent.socket.send(JSON.stringify(msg));
@@ -187,51 +182,50 @@ export default class Game extends Phaser.Scene {
    *  @param {String} action - The executed action.
    */
   updateLogic(player, action) {
-    const worm = window.agents.find(agent => agent.id === player).worm;
-    const otherWorms = window.agents.filter(agent => agent.id !== player).map(agent => agent.worm);
+    const curPlayer = window.agents.find(agent => agent.id === player);
+    const otherPlayers = window.agents.filter(agent => agent.id !== player);
 
     if (action === 'move') {
-      worm.move();
+      curPlayer.worm.move();
     } else if (action === 'left') {
-      worm.turnLeft();
+      curPlayer.worm.turnLeft();
     } else if (action === 'right') {
-      worm.turnRight();
+      curPlayer.worm.turnRight();
     } else if (action === 'fire') {
-      worm.fire();
-      var hit = otherWorms
-        .map(other => ({
-          worm: other,
-          distance: Phaser.Math.Distance.Between(worm.headPosition.x, worm.headPosition.y, other.headPosition.x, other.headPosition.y)
+
+      curPlayer.worm.fire();
+      curPlayer.points = Math.max(0, curPlayer.points - 1);
+      this.events.emit('worm-fired', curPlayer.id, curPlayer.points);
+
+      var hit = otherPlayers
+        .map(otherPlayer => ({
+          worm: otherPlayer.worm,
+          distance: Phaser.Math.Distance.Between(
+            curPlayer.worm.headPosition.x, curPlayer.worm.headPosition.y, 
+            otherPlayer.worm.headPosition.x, otherPlayer.worm.headPosition.y)
         }))
         .sort((a,b) => a.distance - b.distance)
-        .find(other => this.laser.fire(worm.headPosition, worm.direction, other.worm.headPosition));
+        .find(otherPlayer => this.laser.fire(curPlayer.worm.headPosition, curPlayer.worm.direction, otherPlayer.worm.headPosition));
       if (hit) {
-        let lives = hit.worm.tag();
-        this.events.emit('worm-hit', 3 - this.curPlayer, lives);
+        hit.worm.tag();
+        let hitPlayer = window.agents.find(agent => agent.id === hit.worm.id);
+        hitPlayer.points = Math.max(0, hitPlayer.points - 50);
+        this.events.emit('worm-hit', hit.id, hitPlayer.points);
       }
     }
 
-    if (worm.updated) {
+    if (curPlayer.worm.updated) {
       //  If the worm updated, we need to check for collision against apples.
-      let appleEaten = this.apples.checkIfEaten(worm.headPosition);
+      let appleEaten = this.apples.checkIfEaten(curPlayer.worm.headPosition);
       if (appleEaten) {
-        this.updatePoints(this.curPlayer);
+        curPlayer.points += 1;
+        this.events.emit('apple-eaten', curPlayer.id, curPlayer.points);
       }
     }
 
     this.turns += 1;
-    if (worm.update()) {
-      this.events.emit('worm-hit', player, worm.lives);
-    }
-    otherWorms.forEach(otherWorm => {
-      if (otherWorm.update()) {
-        this.events.emit('worm-hit', 3 - player, otherWorm.lives);
-      }
-    })
     this.apples.update();
-    // if (otherWorm.lives > 0) {
     this.curPlayer = (this.curPlayer % window.agents.length) + 1;
-    // }
     this.events.emit('next-player', this.curPlayer);
 
     let reply = {
@@ -256,17 +250,6 @@ export default class Game extends Phaser.Scene {
    */
   endGame() {
     this.events.emit('game-over');
-  }
-
-  /**
-   *  Updates score points.
-   *
-   *  @param {number} agent - The ID of the agent which scored a point.
-   *  @private
-   */
-  updatePoints(agent) {
-    window.agents[agent].points += 1;
-    this.events.emit('apple-eaten', agent, window.agents[agent].points);
   }
 
   startConnection(agent) {

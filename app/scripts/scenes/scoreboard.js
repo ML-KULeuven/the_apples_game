@@ -38,7 +38,8 @@ export default class Scoreboard extends Phaser.Scene {
     gameScene.events
       .on('next-player', player => this.setActivePlayer(player))
       .on('apple-eaten', (player, points) => this.setScore(player, points))
-      .on('worm-hit', (player, lives) => this.setLives(player, lives))
+      .on('worm-fired', (player, points) => this.setScore(player, points))
+      .on('worm-hit', (player, points) => this.setScore(player, points))
       .on('game-over', () => this.showGameOver());
   }
 
@@ -53,12 +54,6 @@ export default class Scoreboard extends Phaser.Scene {
     this.score =
       this.add.bitmapText(60, 0, fontConfig.image, '0')
         .setTint(0x003300);
-    this.lives = this.add.group({
-      key: 'heart',
-      maxSize: 2,
-      repeat: 1,
-      setXY: {x: LENGTH / 2, y: 30, stepX: LENGTH}
-    });
 
     this.gameOverLabel =
       this.add.bitmapText((WIDTH * LENGTH) / 2, 0, fontConfig.image, 'GAME OVER')
@@ -91,24 +86,6 @@ export default class Scoreboard extends Phaser.Scene {
    */
   setScore(player, points) {
     this.score.setText(String(points));
-  }
-
-  /**
-   *  Updates the displayed remaining lives.
-   *
-   *  @param {number} player - The player id.
-   *  @param {number} lives - How many lives the player has.
-   *  @private
-   */
-  setLives(player, lives) {
-    let group = this.lives;
-    for (var i = 0, len = group.children.size; i < len; i++) {
-      if (i < lives) {
-        group.children.entries[i].visible = true;
-      } else {
-        group.children.entries[i].visible = false;
-      }
-    }
   }
 
   /**
