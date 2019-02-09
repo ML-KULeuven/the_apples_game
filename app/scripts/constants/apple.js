@@ -5,6 +5,6 @@
  */
 
 /**
- * Number of frames before an apple respawns.
+ * Number of patches where apples appear.
  */
-export const N = 50;
+export const N = 5;

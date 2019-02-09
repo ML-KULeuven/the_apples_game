@@ -1,4 +1,5 @@
 import {WIDTH, HEIGHT} from '@/constants/grid';
+import {N} from '@/constants/apple';
 
 const generateGuid = () => {
   let result = '';
@@ -66,7 +67,7 @@ export default class Game extends Phaser.Scene {
 
     //  Add the game objects to the grid scene.
     let center = [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)];
-    this.apples = grid.addApples(center[0], center[1]);
+    this.apples = grid.addApples(window.nb_apples || N);
     this.laser = grid.addLaser();
     window.agents.map(agent => {
       let x = Math.floor(Math.random() * WIDTH);

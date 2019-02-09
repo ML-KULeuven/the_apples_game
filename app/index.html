@@ -61,14 +61,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">N<sub>apples</sub></span>
               </div>
-              <input type="number" class="form-control" id="n_apples" value=50 step=1 min=0>
-            </div>
-            <!--<p>N_tagged:</p>-->
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">N<sub>tagged</sub></span>
-              </div>
-              <input type="number" class="form-control" id="n_tagged" value=5 step=1 min=0>
+              <input type="number" class="form-control" id="nb_apples" value=5 step=1 min=0>
             </div>
             <!--<p>Time limit:</p>-->
             <div class="input-group mb-3">
@@ -91,6 +84,7 @@
 
   </body>
   <script>
+  window.nb_apples = document.getElementById('nb_apples').value;
   window.agents = [
       {id: 1, address: "", active: false, socket: undefined, worm: undefined, points: 0},
       {id: 2, address: "", active: false, socket: undefined, worm: undefined, points: 0}
@@ -104,6 +98,7 @@
     el.parentNode.replaceChild(input, el);
   };
   var restart = function() {
+      window.nb_apples = document.getElementById('nb_apples').value;
       var agents = [];
       var nb_agents = parseInt($("#nb_agents").val());
       for (i = 1; i <= nb_agents; i++) { 

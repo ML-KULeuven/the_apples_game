@@ -35,12 +35,11 @@ export default class Maze extends Phaser.Scene {
    *  Add N apple sprites centered around the given grid coordinates.
    *
    *  @protected
-   *  @param {number} [x=0] - The horizontal grid coordinate of the center apple.
-   *  @param {number} [y=x] - The vertical grid coordinate of the center apple.
+   *  @param {number} [n=10] - The number of patches.
    *  @return {Apples} A group with Apple sprites.
    */
-  addApples(x = 0, y = x) {
-    return new Apples(this, x, y);
+  addApples(n = 10) {
+    return new Apples(this, n);
   }
 
   /**
