@@ -224,6 +224,10 @@ export default class Game extends Phaser.Scene {
         this.events.emit('apple-eaten', curPlayer.id, curPlayer.points);
       }
     }
+    
+    if (this.apples.checkIfAllEaten()) {
+      return this.endGame();
+    }
 
     this.curPlayer = (this.curPlayer % window.agents.length) + 1;
     if (this.curPlayer === 1) {
@@ -257,6 +261,9 @@ export default class Game extends Phaser.Scene {
    */
   endGame() {
     this.events.emit('game-over');
+    let sortedByScore = window.agents.sort(function(a, b) {
+      return a.points < b.points ? -1 : 1
+    });
     let reply = {
       type: 'end',
       game: this.gameId,
@@ -264,7 +271,9 @@ export default class Game extends Phaser.Scene {
           location: agent.worm.getGridLocation(),
           orientation: agent.worm.getGridOrientation(),
           score: agent.points
-      }))
+      })),
+      apples: this.apples.getGridLocation(),
+      winner: sortedByScore[sortedByScore.length - 1]['id']
     };
     this.sendToAgents(reply);
     this.scene

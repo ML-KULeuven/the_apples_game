@@ -85,6 +85,7 @@ export default class Apples extends Phaser.GameObjects.Group {
    */
   constructor(scene, n) {
     super(scene);
+    this.nb_apples = n;
     // Create apples only once and store references in a 2D structure
     this.apples = new Array(HEIGHT);
     for (var y = 0; y < HEIGHT; y++) {
@@ -146,20 +147,25 @@ export default class Apples extends Phaser.GameObjects.Group {
         if (Math.random() < P) {
           let apple = this.apples[y][x];
           apple.setVisible(true);
+          this.nb_apples++;
         }
       }
     }
-    let updated = true;
-    return updated;
+    return true;
   }
 
   checkIfEaten(snakePosition) {
     let apple = this.apples[Math.floor(snakePosition.y / LENGTH)][Math.floor(snakePosition.x / LENGTH)];
     if (apple.visible) {
       apple.eat();
+      this.nb_apples--;
       return true;
     }
     return false;
+  }
+
+  checkIfAllEaten() {
+    return this.nb_apples === 0;
   }
 
   getGridLocation() {
