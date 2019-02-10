@@ -75,6 +75,7 @@ export default class Game extends Phaser.Scene {
       const directions = ['UP', 'RIGHT', 'LEFT', 'DOWN'];
       let dir = directions[Math.floor(Math.random()*directions.length)];
       agent.worm = grid.addWorm(x, y, dir, agent.id);
+      agent.points = 0;
     })
 
     //  Create our keyboard controls.
@@ -224,16 +225,21 @@ export default class Game extends Phaser.Scene {
       }
     }
 
-    this.turns += 1;
-    this.apples.update();
     this.curPlayer = (this.curPlayer % window.agents.length) + 1;
+    if (this.curPlayer === 1) {
+      this.turns += 1;
+      if (this.turns === 1000) {
+        return this.endGame();
+      }
+      this.apples.update();
+    }
     this.events.emit('next-player', this.curPlayer);
 
     let reply = {
       type: 'action',
       player: player,
       nextplayer: this.curPlayer,
-      players: agents.map(agent => ({
+      players: window.agents.map(agent => ({
           location: agent.worm.getGridLocation(),
           orientation: agent.worm.getGridOrientation(),
           score: agent.points
@@ -251,6 +257,22 @@ export default class Game extends Phaser.Scene {
    */
   endGame() {
     this.events.emit('game-over');
+    let reply = {
+      type: 'end',
+      game: this.gameId,
+      players: window.agents.map(agent => ({
+          location: agent.worm.getGridLocation(),
+          orientation: agent.worm.getGridOrientation(),
+          score: agent.points
+      }))
+    };
+    this.sendToAgents(reply);
+    this.scene
+        .stop('Loader')
+        .stop('Game')
+        .stop('Scoreboard')
+        .stop('Grid')
+        .start('Loader');
   }
 
   startConnection(agent) {
