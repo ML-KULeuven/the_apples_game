@@ -15,12 +15,12 @@ import * as scenes from '@/scenes';
 /**
  *  Game canvas width.
  */
-export const width = 800;
+export const width = 592;
 
 /**
  *  Game canvas height.
  */
-export const height = 342;
+export const height = 294;
 
 /**
  * The DOM element into which this games canvas will be injected. Either a DOM
