@@ -10,6 +10,7 @@
     <title>The apples game</title>
     <meta name="description" content="The apples game. Part of the Machine Learning: Project course at KU Leuven (Karl Tuyls, Wannes Meert).">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <style>
       html { box-sizing: border-box; }
       html, body { background: #F4F4F5; overflow: hidden; -ms-touch-action: none; touch-action: none; }
@@ -17,73 +18,64 @@
       *, *:before, *:after { box-sizing: inherit; }
       .footer { color: #B3B3B3; margin-bottom: 1ex; }
       .footer a { color: #87A0B3; }
-			body { max-width: 1200px; margin-top: 20px; margin-left: auto; margin-right: auto;}
+      body { max-width: 1000px; margin-top: 20px; margin-left: auto; margin-right: auto;}
       .form { max-width: 800px; margin: 0px auto;margin-top: 20px;}
     </style>
   </head>
 
   <body>
-		<!-- <h1>The Apples Game</h1> -->
-		<div class="row">
-			<div class="col-xl">
-				<div id="playing-area">
+    <!-- <h1>The Apples Game</h1> -->
+    <div class="row">
+      <div class="col-xl">
+        <div id="playing-area">
           <!-- app scripts will be injected here automatically -->
         </div>
-			</div>
-			<div class="col-xl form">
-        <div class="form-group">
+      </div>
+      <div class="col-xl form">
+
+        <input type="hidden" id="nb_agents" value="2" />
+        <div class="form-group" id="agents_input">
           <!--<p>Players:</p>-->
-          <div class="input-group mb-3">
+          <div class="input-group mb-3" id="agent1">
             <div class="input-group-prepend"><span class="input-group-text" id="basic-addon3">Player 1</span></div>
             <!--<input type="text" class="form-control" id="agent1" aria-describedby="basic-addon3">-->
-            <select class="custom-select" id="agent1" onchange="toInput(this)">
+            <select class="custom-select" id="agent1_address" onchange="toInput(this)">
                 <option value="" selected>Human player</option>
                 <option value="agent">Agent</option>
             </select>
           </div>
-          <div class="input-group mb-3">
+          <div class="input-group mb-3" id="agent2">
             <div class="input-group-prepend"><span class="input-group-text" id="basic-addon3">Player 2</span></div>
-            <!--<input type="text" class="form-control" id="agent2" aria-describedby="basic-addon3" value="" placeholder="Human player" readonly>-->
-            <select class="custom-select" id="agent2" onchange="toInput(this)">
+            <!--<input type="text" class="form-control" id="agent2" aria-describedby="basic-addon3">-->
+            <select class="custom-select" id="agent2_address" onchange="toInput(this)">
                 <option value="" selected>Human player</option>
                 <option value="agent">Agent</option>
             </select>
+            <div class="input-group-append"><button id="b2" class="btn add-more" type="button">+</button></div>
           </div>
-				<div class="form-group">
+        </div>
+
+        <div class="form-group">
             <!--<p>N_apples:</p>-->
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">N<sub>apples</sub></span>
               </div>
-              <input type="number" class="form-control" id="n_apples" value=50 step=1 min=0>
+              <input type="number" class="form-control" id="nb_apples_input" value=5 step=1 min=0>
             </div>
-            <!--<p>N_tagged:</p>-->
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">N<sub>tagged</sub></span>
-              </div>
-              <input type="number" class="form-control" id="n_tagged" value=5 step=1 min=0>
-            </div>
-            <!--<p>Time limit:</p>-->
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">Time limit</span>
-              </div>
-              <input type="number" class="form-control" id="timelimit" value=0.5 step=0.5 min=0>
-            </div>
-				</div>
+        </div>
           <!--<p>Fill in the address where an agent can be reached using WebSockets (e.g. ws://127.0.0.1:8089).-->
           <!--If a field is empty a human player is assumed.-->
           <!--</p>-->
           <button type="button" class="btn btn-secondary" id="restart-btn" onclick="restart()">Restart game</button>
-				</div>
-			</div>
-		</div>
-		<div class="footer">
-		<small>&copy; <a href="https://dtai.cs.kuleuven.be">DTAI Research Group</a>, KU Leuven &mdash; <a href="https://github.com/wannesm/dotsandboxes">Source</a></small>
-		</div>
-	
-  <script type="text/javascript" src="app-f9a734bcd7a1eafa2263.bundle.js"></script></body>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+    <small>&copy; <a href="https://dtai.cs.kuleuven.be">DTAI Research Group</a>, KU Leuven &mdash; <a href="https://github.com/wannesm/dotsandboxes">Source</a></small>
+    </div>
+
+  <script type="text/javascript" src="app-83927aad5cf328a845da.bundle.js"></script></body>
   <script>
   var toInput = function(el) { // note, its html element
     if ('agent' !== el.value) return;
@@ -93,8 +85,14 @@
     input.setAttribute("id", el.id);
     el.parentNode.replaceChild(input, el);
   };
-
   var restart = function() {
+      window.nb_apples = document.getElementById('nb_apples_input').value;
+      var agents = [];
+      var nb_agents = parseInt($("#nb_agents").val());
+      for (i = 1; i <= nb_agents; i++) { 
+        agents.push({ id: i, address: document.getElementById('agent' + i + '_address').value })
+      }
+      window.agents = agents;
       game.scene
         .stop('Loader')
         .stop('Game')
@@ -102,6 +100,50 @@
         .stop('Grid')
         .start('Loader');
   }
+
+  $(document).ready(function(){
+    $("#agents_input").on("click", ".add-more", function(e){
+        e.preventDefault();
+        var next = parseInt($("#nb_agents").val());
+        var addto = "#agent" + next;
+        var addRemove = "#b" + (next);
+        next += 1;
+        var newIn = ' \
+        <div class="input-group mb-3" id="agent'+next+'"> \
+            <div class="input-group-prepend"><span class="input-group-text" id="basic-addon3">Player '+next+'</span></div> \
+              <select class="custom-select" onchange="toInput(this)" id="agent' + next + '_address"> \
+                <option value="" selected>Human player</option> \
+                <option value="agent">Agent</option> \
+              </select> \
+            <div class="input-group-append"><button id="b'+next+'" class="btn add-more" type="button">+</button></div> \
+          </div>';
+        var newInput = $(newIn);
+        var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" >-</button>';
+        var removeButton = $(removeBtn);
+        $(addto).after(newInput);
+        $(addRemove).replaceWith(removeButton);
+        $("#nb_agents").val(next);
+
+        $('.remove-me').unbind( "click" ).click(function(e){
+            e.preventDefault();
+            var agentID = "#agent" + this.id.charAt(this.id.length-1);
+            $(agentID).remove();
+            $('#agents_input').children('div.input-group').each(function (index) {
+              $(this).attr('id', 'agent' + (index + 1));
+              $(this).find('select').first().attr('id', 'agent' + (index + 1) + '_address');
+              $(this).find('span.input-group-text').first().text('Player ' + (index + 1));
+              $(this).find('button').first().attr('id', 'b' + (index + 1));
+            });
+            var next = parseInt($("#nb_agents").val() - 1);
+            $("#nb_agents").val(next);
+            if (next <= 2) {
+              var removeBtn = '<button id="remove2" class="btn btn-danger remove-me" >-</button>';
+              var addBtn = '<button id="b2" class="btn add-more" type="button">+</button>';
+              $(removeBtn).replaceWith(addBtn);
+            }
+        });
+    });
+  });
   </script>
 
 </html>

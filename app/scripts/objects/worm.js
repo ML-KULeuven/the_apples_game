@@ -8,9 +8,10 @@ export default class Worm {
    *  @param {Phaser.Scene} scene - The scene that owns this object.
    *  @param {number} x - The horizontal coordinate relative to the scene viewport.
    *  @param {number} y - The vertical coordinate relative to the scene viewport.
+   *  @param {string} dir - The player's direction.
    *  @param {number} id - The player id.
    */
-  constructor(scene, x, y, dir, id) {
+  constructor(scene, x, y, dir, id) { // eslint-disable-line max-params
     this.scene = scene;
     this.id = id;
 

@@ -66,17 +66,23 @@ export default class Game extends Phaser.Scene {
       .launch(grid);
 
     //  Add the game objects to the grid scene.
-    let center = [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)];
     this.apples = grid.addApples(window.nb_apples || N);
     this.laser = grid.addLaser();
-    window.agents.map(agent => {
+    console.log(window.agents);
+    if (window.agents === undefined) {
+      window.agents = [
+        {id: 1, address: '', active: false, socket: undefined, worm: undefined, points: 0},
+        {id: 2, address: '', active: false, socket: undefined, worm: undefined, points: 0}
+      ];
+    }
+    window.agents.forEach(agent => {
       let x = Math.floor(Math.random() * WIDTH);
       let y = Math.floor(Math.random() * HEIGHT);
       const directions = ['UP', 'RIGHT', 'LEFT', 'DOWN'];
-      let dir = directions[Math.floor(Math.random()*directions.length)];
+      let dir = directions[Math.floor(Math.random() * directions.length)];
       agent.worm = grid.addWorm(x, y, dir, agent.id);
       agent.points = 0;
-    })
+    });
 
     //  Create our keyboard controls.
     this.cursors = this.input.keyboard.addKeys({
@@ -182,6 +188,7 @@ export default class Game extends Phaser.Scene {
    *  @private
    *  @param {number} player - The active player's ID.
    *  @param {String} action - The executed action.
+   *  @return {bool} True if the game updated; false if it ended.
    */
   updateLogic(player, action) {
     const curPlayer = window.agents.find(agent => agent.id === player);
@@ -194,7 +201,6 @@ export default class Game extends Phaser.Scene {
     } else if (action === 'right') {
       curPlayer.worm.turnRight();
     } else if (action === 'fire') {
-
       curPlayer.worm.fire();
       curPlayer.points = Math.max(0, curPlayer.points - 1);
       this.events.emit('worm-fired', curPlayer.id, curPlayer.points);
@@ -203,10 +209,10 @@ export default class Game extends Phaser.Scene {
         .map(otherPlayer => ({
           worm: otherPlayer.worm,
           distance: Phaser.Math.Distance.Between(
-            curPlayer.worm.headPosition.x, curPlayer.worm.headPosition.y, 
+            curPlayer.worm.headPosition.x, curPlayer.worm.headPosition.y,
             otherPlayer.worm.headPosition.x, otherPlayer.worm.headPosition.y)
         }))
-        .sort((a,b) => a.distance - b.distance)
+        .sort((a, b) => a.distance - b.distance)
         .find(otherPlayer => this.laser.fire(curPlayer.worm.headPosition, curPlayer.worm.direction, otherPlayer.worm.headPosition));
       if (hit) {
         hit.worm.tag();
@@ -224,16 +230,18 @@ export default class Game extends Phaser.Scene {
         this.events.emit('apple-eaten', curPlayer.id, curPlayer.points);
       }
     }
-    
+
     if (this.apples.checkIfAllEaten()) {
-      return this.endGame();
+      this.endGame();
+      return false;
     }
 
     this.curPlayer = (this.curPlayer % window.agents.length) + 1;
     if (this.curPlayer === 1) {
       this.turns += 1;
       if (this.turns === 1000) {
-        return this.endGame();
+        this.endGame();
+        return false;
       }
       this.apples.update();
     }
@@ -244,14 +252,15 @@ export default class Game extends Phaser.Scene {
       player: player,
       nextplayer: this.curPlayer,
       players: window.agents.map(agent => ({
-          location: agent.worm.getGridLocation(),
-          orientation: agent.worm.getGridOrientation(),
-          score: agent.points
+        location: agent.worm.getGridLocation(),
+        orientation: agent.worm.getGridOrientation(),
+        score: agent.points
       })),
       apples: this.apples.getGridLocation(),
       game: this.gameId
     };
     this.sendToAgents(reply);
+    return true;
   }
 
   /**
@@ -261,27 +270,27 @@ export default class Game extends Phaser.Scene {
    */
   endGame() {
     this.events.emit('game-over');
-    let sortedByScore = window.agents.sort(function(a, b) {
-      return a.points < b.points ? -1 : 1
+    let sortedByScore = window.agents.sort(function (a, b) {
+      return a.points < b.points ? -1 : 1;
     });
     let reply = {
       type: 'end',
       game: this.gameId,
       players: window.agents.map(agent => ({
-          location: agent.worm.getGridLocation(),
-          orientation: agent.worm.getGridOrientation(),
-          score: agent.points
+        location: agent.worm.getGridLocation(),
+        orientation: agent.worm.getGridOrientation(),
+        score: agent.points
       })),
       apples: this.apples.getGridLocation(),
-      winner: sortedByScore[sortedByScore.length - 1]['id']
+      winner: sortedByScore[sortedByScore.length - 1].id
     };
     this.sendToAgents(reply);
     this.scene
-        .stop('Loader')
-        .stop('Game')
-        .stop('Scoreboard')
-        .stop('Grid')
-        .start('Loader');
+      .stop('Loader')
+      .stop('Game')
+      .stop('Scoreboard')
+      .stop('Grid')
+      .start('Loader');
   }
 
   startConnection(agent) {

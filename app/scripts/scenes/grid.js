@@ -48,6 +48,7 @@ export default class Maze extends Phaser.Scene {
    *  @protected
    *  @param {number} [x=0] - The horizontal grid coordinate.
    *  @param {number} [y=x] - The vertical grid coordinate.
+   *  @param {string} [dir=UP] - The orientation of the player.
    *  @param {number} [id=1] - The player id.
    *  @return {Worm} The worm sprite.
    */

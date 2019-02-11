@@ -85,7 +85,7 @@ export default class Apples extends Phaser.GameObjects.Group {
    */
   constructor(scene, n) {
     super(scene);
-    this.nb_apples = n;
+    this.nbApples = n;
     // Create apples only once and store references in a 2D structure
     this.apples = new Array(HEIGHT);
     for (var y = 0; y < HEIGHT; y++) {
@@ -118,19 +118,7 @@ export default class Apples extends Phaser.GameObjects.Group {
         if (this.apples[y][x].visible) {
           continue;
         }
-        let nbNeighbors = 0;
-        for (var nbx = -2; nbx <= 2; nbx++) {
-          for (var nby = -2; nby <= 2; nby++) {
-            if (nbx === 0 && nby === 0) {
-              continue;
-            }
-            let newX = Phaser.Math.Wrap(x + nbx, 0, WIDTH);
-            let newY = Phaser.Math.Wrap(y + nby, 0, HEIGHT);
-            if (distance([x, y], [newX, newY]) <= 2 && this.apples[newY][newX].visible) {
-              nbNeighbors++;
-            }
-          }
-        }
+        let nbNeighbors = this.getNbAppleInNeighborhood(x, y);
         let P;
         switch (nbNeighbors) {
         case 0:
@@ -148,7 +136,7 @@ export default class Apples extends Phaser.GameObjects.Group {
         if (Math.random() < P) {
           let apple = this.apples[y][x];
           apple.setVisible(true);
-          this.nb_apples++;
+          this.nbApples++;
           this.add(apple);
         }
       }
@@ -156,11 +144,28 @@ export default class Apples extends Phaser.GameObjects.Group {
     return true;
   }
 
+  getNbAppleInNeighborhood(x, y) {
+    let nbNeighbors = 0;
+    for (var nbx = -2; nbx <= 2; nbx++) {
+      for (var nby = -2; nby <= 2; nby++) {
+        if (nbx === 0 && nby === 0) {
+          continue;
+        }
+        let newX = Phaser.Math.Wrap(x + nbx, 0, WIDTH);
+        let newY = Phaser.Math.Wrap(y + nby, 0, HEIGHT);
+        if (distance([x, y], [newX, newY]) <= 2 && this.apples[newY][newX].visible) {
+          nbNeighbors++;
+        }
+      }
+    }
+    return nbNeighbors;
+  }
+
   checkIfEaten(snakePosition) {
     let apple = this.apples[Math.floor(snakePosition.y / LENGTH)][Math.floor(snakePosition.x / LENGTH)];
     if (apple.visible) {
       apple.eat();
-      this.nb_apples--;
+      this.nbApples--;
       this.remove(apple);
       return true;
     }
@@ -168,7 +173,7 @@ export default class Apples extends Phaser.GameObjects.Group {
   }
 
   checkIfAllEaten() {
-    return this.nb_apples === 0;
+    return this.nbApples === 0;
   }
 
   getGridLocation() {
