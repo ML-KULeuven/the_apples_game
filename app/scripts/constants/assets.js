@@ -7,9 +7,6 @@
  */
 
 export default [{
-  key: 'tileset',
-  type: 'image'
-}, {
   key: 'eyes',
   type: 'image'
 }, {
@@ -19,15 +16,6 @@ export default [{
   key: 'food',
   type: 'image'
 }, {
-  key: 'bullet',
-  type: 'image'
-}, {
   key: 'font',
-  type: 'image'
-}, {
-  key: 'heart',
-  type: 'image'
-}, {
-  key: 'title',
   type: 'image'
 }];
