@@ -102,6 +102,7 @@ export default class Apples extends Phaser.GameObjects.Group {
       let location = sample().map(Math.floor);
       let apple = this.apples[location[1]][location[0]];
       apple.setVisible(true);
+      this.add(apple);
     }
   }
 
@@ -125,7 +126,7 @@ export default class Apples extends Phaser.GameObjects.Group {
             }
             let newX = Phaser.Math.Wrap(x + nbx, 0, WIDTH);
             let newY = Phaser.Math.Wrap(y + nby, 0, HEIGHT);
-            if (distance([x,y], [newX, newY]) <= 2 && this.apples[newY][newX].visible) {
+            if (distance([x, y], [newX, newY]) <= 2 && this.apples[newY][newX].visible) {
               nbNeighbors++;
             }
           }
@@ -148,6 +149,7 @@ export default class Apples extends Phaser.GameObjects.Group {
           let apple = this.apples[y][x];
           apple.setVisible(true);
           this.nb_apples++;
+          this.add(apple);
         }
       }
     }
@@ -159,6 +161,7 @@ export default class Apples extends Phaser.GameObjects.Group {
     if (apple.visible) {
       apple.eat();
       this.nb_apples--;
+      this.remove(apple);
       return true;
     }
     return false;

@@ -304,6 +304,24 @@ export default class Game extends Phaser.Scene {
     });
   }
 
+  personalize(msg, agent) {
+    // Make sure each agent can only  observe its local neighborhood
+    let msgObj = JSON.parse(msg);
+    let l = msgObj.players[agent.id - 1].location;
+    msgObj.apples = msgObj.apples.filter(a => {
+      let dx = Math.abs(a[0] - l[0]);
+      if (dx > WIDTH / 2) {
+        dx = WIDTH - dx;
+      }
+      let dy = Math.abs(a[1] - l[1]);
+      if (dy > HEIGHT / 2) {
+        dy = HEIGHT - dy;
+      }
+      return (dx <= 7 && dy <= 7);
+    });
+    return JSON.stringify(msgObj);
+  }
+
   sendToAgents(msg) {
     this.msgQueue.push(JSON.stringify(msg));
     this.trySendingToAgents();
@@ -320,7 +338,7 @@ export default class Game extends Phaser.Scene {
       console.log('Send msg to agents', msg);
       window.agents
         .filter(agent => agent.active)
-        .forEach(agent => agent.socket.send(msg));
+        .forEach(agent => agent.socket.send(this.personalize(msg, agent)));
     } else {
       // Wait until all are connected
       setTimeout(this.trySendingToAgents.bind(this), 100);
