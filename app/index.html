@@ -34,7 +34,7 @@
       <div class="col-xl form">
 
         <input type="hidden" id="nb_agents" value="2" />
-        <div class="form-group" id="agents">
+        <div class="form-group" id="agents_input">
           <!--<p>Players:</p>-->
           <div class="input-group mb-3" id="agent1">
             <div class="input-group-prepend"><span class="input-group-text" id="basic-addon3">Player 1</span></div>
@@ -61,7 +61,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">N<sub>apples</sub></span>
               </div>
-              <input type="number" class="form-control" id="nb_apples" value=5 step=1 min=0>
+              <input type="number" class="form-control" id="nb_apples_input" value=5 step=1 min=0>
             </div>
         </div>
           <!--<p>Fill in the address where an agent can be reached using WebSockets (e.g. ws://127.0.0.1:8089).-->
@@ -77,11 +77,6 @@
 
   </body>
   <script>
-  window.nb_apples = document.getElementById('nb_apples').value;
-  window.agents = [
-      {id: 1, address: "", active: false, socket: undefined, worm: undefined, points: 0},
-      {id: 2, address: "", active: false, socket: undefined, worm: undefined, points: 0}
-    ];
   var toInput = function(el) { // note, its html element
     if ('agent' !== el.value) return;
     var input = document.createElement("input");
@@ -91,7 +86,7 @@
     el.parentNode.replaceChild(input, el);
   };
   var restart = function() {
-      window.nb_apples = document.getElementById('nb_apples').value;
+      window.nb_apples = document.getElementById('nb_apples_input').value;
       var agents = [];
       var nb_agents = parseInt($("#nb_agents").val());
       for (i = 1; i <= nb_agents; i++) { 
@@ -107,7 +102,7 @@
   }
 
   $(document).ready(function(){
-    $("#agents").on("click", ".add-more", function(e){
+    $("#agents_input").on("click", ".add-more", function(e){
         e.preventDefault();
         var next = parseInt($("#nb_agents").val());
         var addto = "#agent" + next;
@@ -133,7 +128,7 @@
             e.preventDefault();
             var agentID = "#agent" + this.id.charAt(this.id.length-1);
             $(agentID).remove();
-            $('#agents').children('div.input-group').each(function (index) {
+            $('#agents_input').children('div.input-group').each(function (index) {
               $(this).attr('id', 'agent' + (index + 1));
               $(this).find('select').first().attr('id', 'agent' + (index + 1) + '_address');
               $(this).find('span.input-group-text').first().text('Player ' + (index + 1));

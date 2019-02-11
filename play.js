@@ -1,5 +1,5 @@
 /**
- * Runs the apples game without a GUI. Each argument should correspond to the 
+ * Runs the apples game without a GUI. Each argument should correspond to the
  * websocket address of an agent.
  * e.g., `node play.js ws://localhost:8001 ws://localhost:8001`
  *
@@ -36,7 +36,11 @@ JSDOM.fromFile('dist/index.html', {
   dom.window.scrollTo = () => {};
   dom.window.focus = () => {};
   // pass the agent's addresses to the game
-  dom.window.agents = process.argv.slice(2);
+  dom.window.agents = [];
+  var agentAdresses = process.argv.slice(2);
+  for (var i = 0; i < agentAdresses.length; i++) {
+    dom.window.agents.push({id: i + 1, address: agentAdresses[i]});
+  }
 }).catch(error => {
-    console.log(error.message);
+  console.log(error.message);
 });
