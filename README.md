@@ -1,9 +1,9 @@
 Apples game application
 ==========================
-Two agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at the other agent, “tagging them”, to temporarily remove them from the game, but this action does not trigger a reward.
+Several agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at one of the other agents, “tagging them”, to temporarily remove them from the game, but this action does not trigger a reward.
 <https://deepmind.com/blog/understanding-agent-cooperation/>
 
-Live demo: https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist/
+Live demo: <https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist/>
 
 ![Screenshot of the Apples Game](https://people.cs.kuleuven.be/wannes.meert/the_apples_game/screenshot.png?v=1)
 
@@ -58,37 +58,37 @@ Starting the agent client is done using the following command:
 This starts a websocket on the given port that can receive JSON messages.
 
 The JSON messages given below should be handled by your agent.
-Take into account the maximal time allowed to reply.
 
 ### Initiate the game
 
-Both players get a message that a new game has started:
+Each agent gets a message that a new game has started:
 
     {
         "type": "start",
         "player": 1,
-        "timelimit", 0.5,
-        "game": "123456"
-        "grid": [5, 5],
+        "game": "123456",
+        "grid": [36, 16],
         "players": [
           {
-            "location": [7,10],
+            "location": [7, 10],
             "orientation": "right"
           },
           {
-            "location": [43,10],
-            "orientation": "left"
+            "location": ["?", "?"],
+            "orientation": "?"
           }
         ],
-        "apples": [[25,15], [25,14], ...]
+        "apples": [[10, 15], [3, 5], ...]
     }
 
-where `player` is the number assigned to this agent, `timelimit` is the
-time in seconds in which you need to send your action back to the server,
-and `grid` is the grid size in rows and columns. Furthermore, `players`
-contains the initial locations and orientations of respectively player 1
-and player 2. Finally, `apples` contains the locations of the apples. Locations
-are represented as `[x, y]` coordinates with the origin at the top left.
+where `player` is the number assigned to this agent
+and `grid` is the grid size in columns and rows. Furthermore, `players`
+contains the initial locations and orientations of all players that participate. 
+Finally, `apples` contains the locations of the apples. Locations
+are represented as `[x, y]` coordinates with the origin at the top left. Note
+that only the locations of apples that are within a 15x15 window of the agent's
+location are included in the message. Similarly, the location and orientation of
+the players that are outside this window are replaced with a quotation mark.
 
 If you are player 1, reply with the first action you want to perform:
 
@@ -98,26 +98,26 @@ If you are player 1, reply with the first action you want to perform:
     }
 
 The field `orientation` is either 'move' (move on position forward), 'left' (turn left)
-'right' (turn right) or 'fire' (fire at the other agent).
+'right' (turn right) or 'fire' (fire at one the other agents).
 
 
 ### Action in the game
 
-When an action is played, the message sent to both players is:
+When an action is played, each agent receives a message of the following format:
 
     {
         "type": "action",
         "player": 1,
         "nextplayer": 2,
-        "game": "123456"
+        "game": "123456",
         "players": [
           {
-            "location": [7,10],
+            "location": [7, 10],
             "orientation": "right",
             "score": 10
           },
           {
-            "location": [43,10],
+            "location": [33, 10],
             "orientation": "left",
             "score": 5
           }
@@ -125,6 +125,8 @@ When an action is played, the message sent to both players is:
         "apples": [[25,15], [25,14], ...]
     }
 
+However, the fields `players` and `apples` will be different for each receiving agent,
+depending on each agent's 15x15 observable window.
 
 If it is your turn you should answer with a message that states your next
 move:
@@ -181,12 +183,12 @@ Contact information
 
 Main developer:
 
-- Pieter Robberechts,  https://people.cs.kuleuven.be/pieter.robberechts
+- Pieter Robberechts, <https://people.cs.kuleuven.be/pieter.robberechts>
 
 Team:
 
-- Wannes Meert, https://people.cs.kuleuven.be/wannes.meert
-- Karl Tuyls, http://www.karltuyls.net/
-- Sebastijan Dumančić, https://people.cs.kuleuven.be/sebastijan.dumancic
-- Robin Manhaeve,  https://people.cs.kuleuven.be/robin.manhaeve
+- Wannes Meert, <https://people.cs.kuleuven.be/wannes.meert>
+- Karl Tuyls, <http://www.karltuyls.net>
+- Sebastijan Dumančić, <https://people.cs.kuleuven.be/sebastijan.dumancic>
+- Robin Manhaeve, <https://people.cs.kuleuven.be/robin.manhaeve>
 

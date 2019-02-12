@@ -33,15 +33,13 @@ class Agent:
     This class does not necessarily use the best data structures for the
     approach you want to use.
     """
-    def __init__(self, player, nb_rows, nb_cols, timelimit):
+    def __init__(self, player, nb_rows, nb_cols):
         """Create Dots and Boxes agent.
         :param player: Player number, 1 or 2
         :param nb_rows: Rows in grid
         :param nb_cols: Columns in grid
-        :param timelimit: Maximum time allowed to send a next action.
         """
         self.player = {player}
-        self.timelimit = timelimit
         self.ended = False
         self.nb_rows = nb_rows
         self.nb_cols = nb_cols
@@ -98,8 +96,7 @@ async def handler(websocket, path):
                     nb_rows, nb_cols = msg["grid"]
                     games[msg["game"]] = agentclass(msg["player"],
                                                     nb_rows,
-                                                    nb_cols,
-                                                    msg["timelimit"])
+                                                    nb_cols)
                 if msg["player"] == 1:
                     # Start the game
                     nm = games[game].next_action()

@@ -42,7 +42,6 @@ export default class Game extends Phaser.Scene {
    */
   init(/* data */) {
     this.gameId = generateGuid();
-    this.timelimit = 0.5;
     this.curPlayer = 1;
     this.turns = 0;
 
@@ -102,9 +101,8 @@ export default class Game extends Phaser.Scene {
             let msg = {
               type: 'start',
               player: agent.id,
-              timelimit: self.timelimit,
               game: self.gameId,
-              grid: [HEIGHT, WIDTH],
+              grid: [WIDTH, HEIGHT],
               players: window.agents.map(agent => ({
                 location: agent.worm.getGridLocation(),
                 orientation: agent.worm.getGridOrientation()
