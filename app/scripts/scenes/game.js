@@ -68,7 +68,6 @@ export default class Game extends Phaser.Scene {
     //  Add the game objects to the grid scene.
     this.apples = grid.addApples(window.nb_apples || N);
     this.laser = grid.addLaser();
-    console.log(window.agents);
     if (window.agents === undefined) {
       window.agents = [
         {id: 1, address: '', active: false, socket: undefined, worm: undefined, points: 0},
@@ -215,10 +214,13 @@ export default class Game extends Phaser.Scene {
         .sort((a, b) => a.distance - b.distance)
         .find(otherPlayer => this.laser.fire(curPlayer.worm.headPosition, curPlayer.worm.direction, otherPlayer.worm.headPosition));
       if (hit) {
+        console.log(hit);
         hit.worm.tag();
         let hitPlayer = window.agents.find(agent => agent.id === hit.worm.id);
+        console.log(hitPlayer);
         hitPlayer.points = Math.max(0, hitPlayer.points - 50);
         this.events.emit('worm-hit', hit.id, hitPlayer.points);
+        console.log(window.agents);
       }
     }
 
@@ -260,6 +262,7 @@ export default class Game extends Phaser.Scene {
       game: this.gameId
     };
     this.sendToAgents(reply);
+    console.log(window.agents);
     return true;
   }
 
@@ -317,17 +320,24 @@ export default class Game extends Phaser.Scene {
     // Make sure each agent can only  observe its local neighborhood
     let msgObj = JSON.parse(msg);
     let l = msgObj.players[agent.id - 1].location;
-    msgObj.apples = msgObj.apples.filter(a => {
-      let dx = Math.abs(a[0] - l[0]);
+    function isInWindow(p) {
+      let dx = Math.abs(l[0] - p[0]);
       if (dx > WIDTH / 2) {
         dx = WIDTH - dx;
       }
-      let dy = Math.abs(a[1] - l[1]);
+      let dy = Math.abs(l[1] - p[1]);
       if (dy > HEIGHT / 2) {
         dy = HEIGHT - dy;
       }
       return (dx <= 7 && dy <= 7);
-    });
+    }
+    msgObj.apples = msgObj.apples.filter(a => isInWindow(a));
+    msgObj.players
+      .filter(p => !isInWindow(p.location))
+      .forEach(p => {
+        p.location = ['?', '?'];
+        p.orientation = '?';
+      });
     return JSON.stringify(msgObj);
   }
 
