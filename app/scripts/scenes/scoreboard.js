@@ -24,6 +24,7 @@ export default class Scoreboard extends Phaser.Scene {
         height: 3 * LENGTH
       }]
     });
+    this.activePlayer = 1;
   }
 
   /**
@@ -36,7 +37,10 @@ export default class Scoreboard extends Phaser.Scene {
   init({gameScene}) {
     //  Bind the maze events to update the score board.
     gameScene.events
-      .on('next-player', player => this.setActivePlayer(player))
+      .on('next-player', (player, points) => {
+        this.setActivePlayer(player);
+        this.setScore(player, points);
+      })
       .on('apple-eaten', (player, points) => this.setScore(player, points))
       .on('worm-fired', (player, points) => this.setScore(player, points))
       .on('worm-hit', (player, points) => this.setScore(player, points))
@@ -73,6 +77,7 @@ export default class Scoreboard extends Phaser.Scene {
    *  @private
    */
   setActivePlayer(player) {
+    this.activePlayer = player;
     this.scoreLabel.setText('P' + String(player));
     this.scoreLabel.tint = COLORS[player];
   }
@@ -85,7 +90,9 @@ export default class Scoreboard extends Phaser.Scene {
    *  @private
    */
   setScore(player, points) {
-    this.score.setText(String(points));
+    if (player === this.activePlayer) {
+      this.score.setText(String(points));
+    }
   }
 
   /**
