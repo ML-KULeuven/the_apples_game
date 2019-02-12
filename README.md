@@ -88,7 +88,7 @@ Finally, `apples` contains the locations of the apples. Locations
 are represented as `[x, y]` coordinates with the origin at the top left. Note
 that only the locations of apples that are within a 15x15 window of the agent's
 location are included in the message. Similarly, the location and orientation of
-the players that are outside this window are replaced with a quotation mark.
+the players that are outside this window are replaced with a question mark.
 
 If you are player 1, reply with the first action you want to perform:
 
@@ -122,7 +122,7 @@ When an action is played, each agent receives a message of the following format:
             "score": 5
           }
         ],
-        "apples": [[25,15], [25,14], ...]
+        "apples": [[25, 15], [25, 14], ...]
     }
 
 However, the fields `players` and `apples` will be different for each receiving agent,
@@ -148,17 +148,17 @@ When the game ends after an action, the message is slightly altered:
         "nextplayer": 0,
         "players": [
           {
-            "location": [7,10],
+            "location": [7, 10],
             "orientation": "right",
             "score": 10
           },
           {
-            "location": [43,10],
+            "location": [33, 10],
             "orientation": "left",
             "score": 5
           }
         ],
-        "apples": [[25,15], [25,14], ...]
+        "apples": [[25, 15], [25, 14], ...]
         "winner": 1
     }
 
