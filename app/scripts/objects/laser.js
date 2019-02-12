@@ -11,7 +11,7 @@ export default class Laser extends Phaser.GameObjects.Image {
     super(scene);
 
     this.maxDuration = 100;
-    this.freq = 80; // The frequency (4) = the number of waves
+    this.freq = LENGTH; // The frequency (4) = the number of waves
     this.sin = Phaser.Math.SinCosTableGenerator(880, 3, 1, this.freq).sin;
     this.bmd = scene.add.graphics();
 
@@ -68,7 +68,8 @@ export default class Laser extends Phaser.GameObjects.Image {
         } else {
           this.y0 = 0;
         }
-        this.y1 = posFiring.x;
+        this.y1 = posFiring.y;
+        console.log(this.y0, this.y1);
       }
     }
     this.active = true;
