@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Runs the apples game without a GUI. Each argument should correspond to the
  * websocket address of an agent.
