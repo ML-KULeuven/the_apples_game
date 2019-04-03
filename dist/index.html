@@ -13,7 +13,7 @@
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <style>
       html { box-sizing: border-box; }
-      html, body { background: #F4F4F5; overflow: hidden; -ms-touch-action: none; touch-action: none; }
+      html, body { background: #F4F4F5; overflow: auto; -ms-touch-action: none; touch-action: none; }
       * { margin: 0; padding: 0; }
       *, *:before, *:after { box-sizing: inherit; }
       .footer { color: #B3B3B3; margin-bottom: 1ex; width: 592px; margin: 0 auto; }
@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-  <script type="text/javascript" src="app-e5ce8a5f4d8bf786991c.bundle.js"></script></body>
+  <script type="text/javascript" src="app-100c8ebc32b8ad9024d8.bundle.js"></script></body>
   <script>
   var toInput = function(el) { // note, its html element
     if ('agent' !== el.value) return;
@@ -89,7 +89,7 @@
       window.nb_apples = document.getElementById('nb_apples_input').value;
       var agents = [];
       var nb_agents = parseInt($("#nb_agents").val());
-      for (i = 1; i <= nb_agents; i++) { 
+      for (i = 1; i <= nb_agents; i++) {
         agents.push({ id: i, address: document.getElementById('agent' + i + '_address').value })
       }
       window.agents = agents;
@@ -124,15 +124,22 @@
         $(addRemove).replaceWith(removeButton);
         $("#nb_agents").val(next);
 
-        $('.remove-me').unbind( "click" ).click(function(e){
+        $('.remove-me').off( "click" ).click(function(e){
             e.preventDefault();
-            var agentID = "#agent" + this.id.charAt(this.id.length-1);
+            //remove has length 5, thus we need to start at 5+1.
+            var agentID = "#agent" + this.id.slice(6,this.id.length);
             $(agentID).remove();
             $('#agents_input').children('div.input-group').each(function (index) {
               $(this).attr('id', 'agent' + (index + 1));
               $(this).find('select').first().attr('id', 'agent' + (index + 1) + '_address');
               $(this).find('span.input-group-text').first().text('Player ' + (index + 1));
-              $(this).find('button').first().attr('id', 'b' + (index + 1));
+              if ($(this).find('button').first().attr('id') !== undefined) {
+                if ($(this).find('button').first().attr('id').includes("remove")){
+                  $(this).find('button').first().attr('id', 'remove' + (index + 1));
+                } else {
+                  $(this).find('button').first().attr('id', 'b' + (index + 1));
+                }
+              }
             });
             var next = parseInt($("#nb_agents").val() - 1);
             $("#nb_agents").val(next);
