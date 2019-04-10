@@ -150,8 +150,8 @@ export default class Game extends Phaser.Scene {
    */
   update(time, delta) {
     this.laser.update(time, delta);
-    var allUpdated = window.agents.every(agent => agent.updated !== false);
-    if (!window.agents.find(agent => agent.id === this.curPlayer).address && allUpdated) {
+    var allUpdated = window.agents.every(agent => agent.worm.updated !== false);
+    if (!window.agents.find(agent => agent.id === this.curPlayer).address && allUpdated && !this.laser.active) {
       this.handleUserInput();
     }
   }
@@ -201,7 +201,6 @@ export default class Game extends Phaser.Scene {
       curPlayer.worm.fire();
       curPlayer.points = Math.max(0, curPlayer.points - 1);
       this.events.emit('worm-fired', curPlayer.id, curPlayer.points);
-
       var hit = otherPlayers
         .map(otherPlayer => ({
           worm: otherPlayer.worm,
@@ -210,7 +209,15 @@ export default class Game extends Phaser.Scene {
             otherPlayer.worm.headPosition.x, otherPlayer.worm.headPosition.y)
         }))
         .sort((a, b) => a.distance - b.distance)
-        .find(otherPlayer => this.laser.fire(curPlayer.worm.headPosition, curPlayer.worm.direction, otherPlayer.worm.headPosition));
+        .find(otherPlayer => otherPlayer.worm.body.getChildren()
+          .map(child => ({
+            pos: child,
+            distance: Phaser.Math.Distance.Between(
+              curPlayer.worm.headPosition.x, curPlayer.worm.headPosition.y,
+              child.x, child.y)
+          }))
+          .sort((a, b) => a.distance - b.distance)
+          .find(pos => this.laser.fire(curPlayer.worm.headPosition, curPlayer.worm.direction, pos.pos)));
       if (hit) {
         hit.worm.tag();
         let hitPlayer = window.agents.find(agent => agent.id === hit.worm.id);
@@ -342,8 +349,8 @@ export default class Game extends Phaser.Scene {
 
   trySendingToAgents() {
     var allConnected = window.agents.every(agent => agent.address === undefined || agent.active !== false);
-    var allUpdated = window.agents.every(agent => agent.updated !== false);
-    if (allConnected && allUpdated) {
+    var allUpdated = window.agents.every(agent => agent.worm.updated !== false);
+    if (allConnected && allUpdated && !this.laser.active) {
       if (this.msgQueue.length === 0) {
         return;
       }

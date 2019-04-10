@@ -48,13 +48,12 @@ export default class Worm {
     }
     this.headPosition = new Phaser.Geom.Point(0, 0);
     this.tailPosition = new Phaser.Geom.Point(0, 0);
-    this.move();
-    this.grow();
-    this.move();
-    this.grow();
-
     // Instance variables
     this.updated = true;
+    this.move();
+    this.grow();
+    this.move();
+    this.grow();
   }
 
   getGridLocation() {
@@ -87,7 +86,6 @@ export default class Worm {
       this.direction.setTo(this.direction.y, -this.direction.x);
       this.head.angle -= 90;
 
-      this.updated = false;
       this.move();
     }
   }
@@ -102,7 +100,6 @@ export default class Worm {
       this.direction.setTo(-this.direction.y, this.direction.x);
       this.head.angle += 90;
 
-      this.updated = false;
       this.move();
     }
   }
@@ -114,29 +111,33 @@ export default class Worm {
    *  @returns {boolean} Whether the worm has moved or not.
    */
   move() {
-    //  Update the worm position according to the direction the player wants
-    //  it to move to. The `Math.Wrap` function call allows the worm to wrap
-    //  around the screen edges, so when it goes off any side it should
-    //  re-appear on the opposite side.
-    this.headPosition.setTo(
-      Phaser.Math.Wrap(this.head.x + this.direction.x, 0, WIDTH * LENGTH),
-      Phaser.Math.Wrap(this.head.y + this.direction.y, 0, HEIGHT * LENGTH)
-    );
-    this.head.setPosition(this.headPosition.x, this.headPosition.y);
+    if (this.updated) {
+      this.updated = false;
+      //  Update the worm position according to the direction the player wants
+      //  it to move to. The `Math.Wrap` function call allows the worm to wrap
+      //  around the screen edges, so when it goes off any side it should
+      //  re-appear on the opposite side.
+      this.headPosition.setTo(
+        Phaser.Math.Wrap(this.head.x + this.direction.x, 0, WIDTH * LENGTH),
+        Phaser.Math.Wrap(this.head.y + this.direction.y, 0, HEIGHT * LENGTH)
+      );
+      this.head.setPosition(this.headPosition.x, this.headPosition.y);
 
-    //  Update the body segments and place the last coordinate into
-    //  `this.tailPosition`.
-    Phaser.Actions.ShiftPosition(
-      this.body.children.entries,
-      this.headPosition.x,
-      this.headPosition.y,
-      1,
-      this.tailPosition
-    );
+      //  Update the body segments and place the last coordinate into
+      //  `this.tailPosition`.
+      Phaser.Actions.ShiftPosition(
+        this.body.children.entries,
+        this.headPosition.x,
+        this.headPosition.y,
+        1,
+        this.tailPosition
+      );
 
-    this.updated = true;
+      this.updated = true;
 
-    return true;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -149,57 +150,61 @@ export default class Worm {
   }
 
   tag() {
-    this.updated = false;
-    this.scene.tweens.add({
+    if (this.updated) {
+      this.updated = false;
+      this.scene.tweens.add({
 
-      // adding the knife to tween targets
-      targets: [this.head, ...this.body.getChildren()],
+        // adding the knife to tween targets
+        targets: [this.head, ...this.body.getChildren()],
 
-      // y destination
-      alpha: 0.5,
-      ease: 'Bounce',
-      yoyo: true,
+        // y destination
+        alpha: 0.5,
+        ease: 'Bounce',
+        yoyo: true,
 
-      // tween duration
-      duration: 500,
+        // tween duration
+        duration: 500,
 
-      // callback scope
-      callbackScope: this,
+        // callback scope
+        callbackScope: this,
 
-      // function to be executed once the tween has been completed
-      onComplete: function () {
-        this.alpha = 1;
-        this.updated = true;
-      }
-    });
-
-    return true;
+        // function to be executed once the tween has been completed
+        onComplete: function () {
+          this.alpha = 1;
+          this.updated = true;
+        }
+      });
+      return true;
+    }
+    return false;
   }
 
   fire() {
-    this.updated = false;
-    this.scene.tweens.add({
+    if (this.updated) {
+      this.updated = false;
+      this.scene.tweens.add({
 
-      // adding the knife to tween targets
-      targets: [this.head],
+        // adding the knife to tween targets
+        targets: [this.head],
 
-      // y destination
-      x: (this.head.x - (this.direction.x / LENGTH * 5)),
-      y: (this.head.y - (this.direction.y / LENGTH * 5)),
-      ease: 'Linear',
-      yoyo: true,
+        // y destination
+        x: (this.head.x - (this.direction.x / LENGTH * 5)),
+        y: (this.head.y - (this.direction.y / LENGTH * 5)),
+        ease: 'Linear',
+        yoyo: true,
 
-      // tween duration
-      duration: 200,
+        // tween duration
+        duration: 200,
 
-      // callback scope
-      callbackScope: this,
+        // callback scope
+        callbackScope: this,
 
-      // function to be executed once the tween has been completed
-      onComplete: function () {
-        this.updated = true;
-      }
-    });
+        // function to be executed once the tween has been completed
+        onComplete: function () {
+          this.updated = true;
+        }
+      });
+    }
   }
 
   /**
