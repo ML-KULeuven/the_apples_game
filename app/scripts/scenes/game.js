@@ -150,8 +150,8 @@ export default class Game extends Phaser.Scene {
    */
   update(time, delta) {
     this.laser.update(time, delta);
-    var allUpdated = window.agents.every(agent => agent.updated !== false);
-    if (!window.agents.find(agent => agent.id === this.curPlayer).address && allUpdated) {
+    var allUpdated = window.agents.every(agent => agent.worm.updated !== false);
+    if (!window.agents.find(agent => agent.id === this.curPlayer).address && allUpdated && !this.laser.active) {
       this.handleUserInput();
     }
   }
@@ -201,7 +201,6 @@ export default class Game extends Phaser.Scene {
       curPlayer.worm.fire();
       curPlayer.points = Math.max(0, curPlayer.points - 1);
       this.events.emit('worm-fired', curPlayer.id, curPlayer.points);
-
       var hit = otherPlayers
         .map(otherPlayer => ({
           worm: otherPlayer.worm,
@@ -342,8 +341,8 @@ export default class Game extends Phaser.Scene {
 
   trySendingToAgents() {
     var allConnected = window.agents.every(agent => agent.address === undefined || agent.active !== false);
-    var allUpdated = window.agents.every(agent => agent.updated !== false);
-    if (allConnected && allUpdated) {
+    var allUpdated = window.agents.every(agent => agent.worm.updated !== false);
+    if (allConnected && allUpdated && !this.laser.active) {
       if (this.msgQueue.length === 0) {
         return;
       }
