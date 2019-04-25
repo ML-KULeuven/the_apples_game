@@ -109,7 +109,7 @@ export default class Game extends Phaser.Scene {
               })),
               apples: self.apples.getGridLocation()
             };
-            agent.socket.send(JSON.stringify(msg));
+            agent.socket.send(self.personalize(JSON.stringify(msg), agent));
 
             // Listen for further messages from the agens
             agent.socket.addEventListener('message', (agent => function (event) {
