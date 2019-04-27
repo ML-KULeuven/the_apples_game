@@ -39,10 +39,17 @@ JSDOM.fromFile('dist/index.html', {
   dom.window.focus = () => {};
   // pass the agent's addresses to the game
   dom.window.agents = [];
-  var agentAdresses = process.argv.slice(2);
-  for (var i = 0; i < agentAdresses.length; i++) {
-    dom.window.agents.push({id: i + 1, address: agentAdresses[i]});
+  var args = process.argv.slice(2);
+  if (!isNaN(args[args.length - 1])) {
+    dom.window.nb_apples = parseInt(args.pop(), 10);
   }
+  for (var i = 0; i < args.length; i++) {
+    dom.window.agents.push({id: i + 1, address: args[i]});
+  }
+  dom.window.gameOver = () => {
+    process.exit(0);
+  };
 }).catch(error => {
   console.log(error.message);
+  process.exit(1);
 });

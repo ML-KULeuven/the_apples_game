@@ -281,12 +281,7 @@ export default class Game extends Phaser.Scene {
       winner: sortedByScore[sortedByScore.length - 1].id
     };
     this.sendToAgents(reply);
-    this.scene
-      .stop('Loader')
-      .stop('Game')
-      .stop('Scoreboard')
-      .stop('Grid')
-      .start('Loader');
+    window.gameOver();
   }
 
   startConnection(agent) {

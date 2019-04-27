@@ -10,7 +10,7 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
     <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <style>
       html { box-sizing: border-box; }
       html, body { background: #F4F4F5; overflow: auto; -ms-touch-action: none; touch-action: none; }
@@ -100,6 +100,9 @@
         .stop('Grid')
         .start('Loader');
   }
+
+  window.gameOver = () => {};
+  // window.gameOver = restart; // automatically start a new game on game over
 
   $(document).ready(function(){
     $("#agents_input").on("click", ".add-more", function(e){
