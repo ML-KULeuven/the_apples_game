@@ -36,12 +36,17 @@ Or alternatively, you can start the app using the included simple server:
 The game can then be played by directing your browser to http://127.0.0.1:8080.
 
 Alternatively, you could run the game headless from the CLI. Therefore,
-you should run the following command:
+you should first install the required dependencies:
 
-    $ node play.js ws://localhost:8001 ws://localhost:8002
+    $ npm install
 
-The arguments are the websocket address of a game-playing agent. These agents
-are described in the next section.
+Next, run the following command:
+
+    $ node play.js ws://localhost:8001 ws://localhost:8002 3
+
+The arguments are the websocket addresses of the game-playing agents (as many
+as you want) and the number of apple patches (optional; default is 5). The
+agents are described in the next section.
 
 Start the agent client
 ----------------------
