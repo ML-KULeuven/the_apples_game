@@ -319,6 +319,7 @@ export default class Game extends Phaser.Scene {
       }
       return (dx <= 7 && dy <= 7);
     }
+    msgObj.receiver = agent.id;
     msgObj.apples = msgObj.apples.filter(a => isInWindow(a));
     msgObj.players
       .filter(p => !isInWindow(p.location))

@@ -83,7 +83,7 @@ Each agent gets a message that a new game has started:
             "orientation": "?"
           }
         ],
-        "apples": [[10, 15], [3, 5], ...]
+        "apples": [[10, 15], [3, 5], ...],
     }
 
 where `player` is the number assigned to this agent
@@ -127,11 +127,17 @@ When an action is played, each agent receives a message of the following format:
             "score": 5
           }
         ],
-        "apples": [[25, 15], [25, 14], ...]
+        "apples": [[25, 15], [25, 14], ...],
+        "receiver": 2
     }
 
-However, the fields `players` and `apples` will be different for each receiving agent,
-depending on each agent's 15x15 observable window.
+The field `player` corresponds to the ID of the player that executed the action,
+the `nextplayer` field indicates which player should play the next turn and the 
+`receiver` field has the ID of the player that should receive this message. Finally,
+the fields `players` and `apples` hold information about respectively the other
+players and the apples in the field. However, the fields `players` and `apples`
+will be different for each receiving agent, depending on each agent's 15x15
+observable window.
 
 If it is your turn you should answer with a message that states your next
 move:
@@ -164,7 +170,8 @@ When the game ends after an action, the message is slightly altered:
           }
         ],
         "apples": [[25, 15], [25, 14], ...]
-        "winner": 1
+        "winner": 1,
+        "receiver": 2
     }
 
 The `type` field becomes `end` and a new field `winner` is set to the player
