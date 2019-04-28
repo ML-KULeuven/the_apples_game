@@ -2,9 +2,9 @@
 # encoding: utf-8
 """
 agent.py
-Template for the Machine Learning Project course at KU Leuven (2017-2018)
-of Hendrik Blockeel and Wannes Meert.
-Copyright (c) 2018 KU Leuven. All rights reserved.
+Template for the Machine Learning Project course at KU Leuven (2018-2019)
+of Karl Tuys and Wannes Meert.
+Copyright (c) 2019 KU Leuven. All rights reserved.
 """
 import sys
 import argparse
@@ -22,8 +22,8 @@ agentclass = None
 
 
 class Agent:
-    """Example Dots and Boxes agent implementation base class.
-    It returns a random next move.
+    """Example agent implementation base class.
+    It moves the agent one position forward.
     A Agent object should implement the following methods:
     - __init__
     - add_player
@@ -34,8 +34,8 @@ class Agent:
     approach you want to use.
     """
     def __init__(self, player, nb_rows, nb_cols):
-        """Create Dots and Boxes agent.
-        :param player: Player number, 1 or 2
+        """Create an agent.
+        :param player: Player number
         :param nb_rows: Rows in grid
         :param nb_cols: Columns in grid
         """
@@ -52,8 +52,8 @@ class Agent:
         """Register action played in game.
         :param row:
         :param columns:
-        :param orientation: "v" or "h"
-        :param player: 1 or 2
+        :param orientation: "left", "right", "up" or "down"
+        :param player id
         """
         pass
 
@@ -93,7 +93,7 @@ async def handler(websocket, path):
                 if msg["game"] in games:
                     games[msg["game"]].add_player(msg["player"])
                 else:
-                    nb_rows, nb_cols = msg["grid"]
+                    nb_cols, nb_rows = msg["grid"]
                     games[msg["game"]] = agentclass(msg["player"],
                                                     nb_rows,
                                                     nb_cols)
