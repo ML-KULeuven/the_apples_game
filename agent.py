@@ -115,7 +115,7 @@ async def handler(websocket, path):
 
             elif msg["type"] == "action":
                 # An action has been played
-                if msg["nextplayer"] in games[game].player:
+                if msg["nextplayer"] in games[game].player and msg["nextplayer"] == msg["receiver"]:
                     # Compute your move
                     nm = games[game].next_action()
                     if nm is None:
