@@ -10,7 +10,7 @@
     <title>The apples game</title>
     <meta name="description" content="The apples game. Part of the Machine Learning: Project course at KU Leuven (Karl Tuyls, Wannes Meert).">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <style>
       html { box-sizing: border-box; }
       html, body { background: #F4F4F5; overflow: auto; -ms-touch-action: none; touch-action: none; }
@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-  <script type="text/javascript" src="app-1427cd04b99e394e5503.bundle.js"></script></body>
+  <script type="text/javascript" src="app-06f0c2ec3b66a9963e60.bundle.js"></script></body>
   <script>
   var toInput = function(el) { // note, its html element
     if ('agent' !== el.value) return;
@@ -100,6 +100,9 @@
         .stop('Grid')
         .start('Loader');
   }
+
+  window.gameOver = () => {};
+  // window.gameOver = restart; // automatically start a new game on game over
 
   $(document).ready(function(){
     $("#agents_input").on("click", ".add-more", function(e){
