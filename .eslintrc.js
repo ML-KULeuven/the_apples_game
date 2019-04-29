@@ -53,7 +53,7 @@ exports.rules = {
   'brace-style': ['error', '1tbs'],
 
   //  Favor Unix-style line endings
-  'linebreak-style': ['error', 'unix'],
+  'linebreak-style': ['off'],
 
   //  End lines with semicolons
   'semi': ['error', 'always'],
