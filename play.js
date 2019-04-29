@@ -47,7 +47,7 @@ JSDOM.fromFile('dist/index.html', {
     dom.window.agents.push({id: i + 1, address: args[i]});
   }
   dom.window.gameOver = () => {
-    process.exit(0);
+    setTimeout(process.exit, 1000, 0);
   };
 }).catch(error => {
   console.log(error.message);
