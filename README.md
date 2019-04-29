@@ -3,13 +3,13 @@ Apples game application
 Several agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at one of the other agents, “tagging them”, to temporarily remove them from the game, but this action does not trigger a reward.
 <https://deepmind.com/blog/understanding-agent-cooperation/>
 
+This setup is part of the course "[Machine Learning: Project](https://onderwijsaanbod.kuleuven.be/syllabi/e/H0T25AE.htm)" (KU Leuven,
+Faculty of engineering, Department of Computer Science,
+[DTAI research group](https://dtai.cs.kuleuven.be)).
+
 Live demo: <https://people.cs.kuleuven.be/~wannes.meert/the_apples_game/dist/>
 
 ![Screenshot of the Apples Game](https://people.cs.kuleuven.be/wannes.meert/the_apples_game/screenshot.png?v=2)
-
-This setup is part of the course "Machine Learning: Project" (KU Leuven,
-Faculty of engineering, Department of Computer Science,
-[DTAI research group](https://dtai.cs.kuleuven.be)).
 
 
 Installation
@@ -199,8 +199,8 @@ Main developer:
 
 Team:
 
-- Wannes Meert, <https://people.cs.kuleuven.be/wannes.meert>
-- Karl Tuyls, <http://www.karltuyls.net>
-- Sebastijan Dumančić, <https://people.cs.kuleuven.be/sebastijan.dumancic>
+- Dr. Wannes Meert, <https://people.cs.kuleuven.be/wannes.meert>
+- Prof. dr. Karl Tuyls, <http://www.karltuyls.net>
+- Dr. Sebastijan Dumančić, <https://people.cs.kuleuven.be/sebastijan.dumancic>
 - Robin Manhaeve, <https://people.cs.kuleuven.be/robin.manhaeve>
 
