@@ -266,9 +266,7 @@ export default class Game extends Phaser.Scene {
    */
   endGame() {
     this.events.emit('game-over');
-    let sortedByScore = window.agents.sort(function (a, b) {
-      return a.points < b.points ? -1 : 1;
-    });
+    let sortedByScore = window.agents.sort((a, b) => b.points - a.points);
     let reply = {
       type: 'end',
       game: this.gameId,
@@ -278,7 +276,7 @@ export default class Game extends Phaser.Scene {
         score: agent.points
       })),
       apples: this.apples.getGridLocation(),
-      winner: sortedByScore[sortedByScore.length - 1].id
+      winner: sortedByScore[0].id
     };
     this.sendToAgents(reply);
     window.gameOver();
