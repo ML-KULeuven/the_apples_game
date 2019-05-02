@@ -1,6 +1,6 @@
 Apples game application
 ==========================
-Several agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at one of the other agents, “tagging them”, to temporarily remove them from the game, but this action does not trigger a reward.
+Several agents roam a shared world and collect apples to receive positive rewards. They may also direct a beam at one of the other agents, “tagging them”. This leads to a negative reward of one for the agent that fired the beam and a negative reward of fifty for the agent that was tagged.
 <https://deepmind.com/blog/understanding-agent-cooperation/>
 
 This setup is part of the course "[Machine Learning: Project](https://onderwijsaanbod.kuleuven.be/syllabi/e/H0T25AE.htm)" (KU Leuven,
